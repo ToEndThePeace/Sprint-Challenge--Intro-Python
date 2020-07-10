@@ -1,7 +1,15 @@
 # Create a class to hold a city location. Call the class "City". It should have
 # fields for name, lat and lon (representing latitude and longitude).
+import csv
+import os
 
-
+class City:
+  def __init__(self, name, lat, lon):
+    self.name = name
+    self.lat = float(lat)
+    self.lon = float(lon)
+  def __str__(self):
+    return f"City({self.name}: [{self.lat}, {self.lon}])"
 # We have a collection of US cities with population over 750,000 stored in the
 # file "cities.csv". (CSV stands for "comma-separated values".)
 #
@@ -20,14 +28,29 @@ def cityreader(cities=[]):
   # TODO Implement the functionality to read from the 'cities.csv' file
   # For each city record, create a new City instance and add it to the 
   # `cities` list
-    
-    return cities
+  with open("cities.csv", newline="") as csvfile:
+    myReader = csv.reader(csvfile)
+    lat_loc = 0
+    lon_loc = 0
+    name_loc = 0
+    for i, row in enumerate(myReader):
+      if i == 0:
+        for index, title in enumerate(row):
+          if title == "city":
+            name_loc = index
+          if title == "lat":
+            lat_loc = index
+          if title == "lng":
+            lon_loc = index
+      else:
+        cities.append(City(row[name_loc], row[lat_loc], row[lon_loc]))
+  return cities
 
 cityreader(cities)
 
 # Print the list of cities (name, lat, lon), 1 record per line.
-for c in cities:
-    print(c)
+# for c in cities:
+#     print(c)
 
 # STRETCH GOAL!
 #
@@ -62,10 +85,31 @@ for c in cities:
 
 def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # within will hold the cities that fall within the specified region
-  within = []
+  within = [x for x in cities if is_it_in(lat1, lon1, lat2, lon2, x)]
 
-  # TODO Ensure that the lat and lon valuse are all floats
+  # TODO Ensure that the lat and lon values are all floats
   # Go through each city and check to see if it falls within 
   # the specified coordinates.
 
   return within
+
+def is_it_in(lat1, lon1, lat2, lon2, city):
+  c1 = None
+  c2 = None
+  if lon1 > lon2:
+    c1 = (lat2, lon2)
+    c2 = (lat1, lon1)
+  else:
+    c1 = (lat1, lon1)
+    c2 = (lat2, lon2)
+  
+  if city.lon >= c1[1] and city.lon <= c2[1]:
+    #the city is within lon ranges, now check for lat
+    if (city.lat >= c1[0] and city.lat <= c2[0]) or\
+       (city.lat >= c2[0] and city.lat <= c1[0]):
+      # we are withing all ranges?
+      return True
+    else:
+      return False
+  else:
+    return False
