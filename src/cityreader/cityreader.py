@@ -10,6 +10,7 @@ class City:
     self.lon = float(lon)
   def __str__(self):
     return f"City({self.name}: [{self.lat}, {self.lon}])"
+
 # We have a collection of US cities with population over 750,000 stored in the
 # file "cities.csv". (CSV stands for "comma-separated values".)
 #
